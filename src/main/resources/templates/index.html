@@ -5,27 +5,295 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Java TODO Demo</title>
     <link rel="icon" href="data:," />
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.18), transparent 30%),
+                #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 760px;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.78);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(18px);
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.14);
+            border: 1px solid rgba(129, 140, 248, 0.22);
+            color: #c7d2fe;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        h1 {
+            font-size: clamp(30px, 5vw, 44px);
+            line-height: 1.05;
+            margin-bottom: 10px;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        .add-form {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+
+        .todo-input {
+            width: 100%;
+            border: 1px solid #334155;
+            background: #111827;
+            color: #f8fafc;
+            border-radius: 14px;
+            padding: 15px 16px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .todo-input::placeholder {
+            color: #64748b;
+        }
+
+        .todo-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
+        }
+
+        .add-button,
+        .delete-button {
+            border: 0;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .add-button {
+            padding: 0 22px;
+            background: linear-gradient(135deg, #6366f1, #0ea5e9);
+            color: white;
+            box-shadow: 0 10px 24px rgba(79, 70, 229, 0.28);
+        }
+
+        .add-button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
+
+        .todo-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .todo-item {
+            border: 1px solid #273449;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.62);
+            overflow: hidden;
+            transition: 0.2s ease;
+        }
+
+        .todo-item:hover {
+            border-color: #475569;
+            transform: translateY(-1px);
+        }
+
+        .todo-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #6366f1;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .todo-title {
+            flex: 1;
+            font-size: 15px;
+            color: #e2e8f0;
+            word-break: break-word;
+        }
+
+        .todo-checkbox:checked + .todo-title {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .delete-button {
+            padding: 9px 13px;
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.18);
+        }
+
+        .delete-button:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 28px 12px 6px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .footer {
+            margin-top: 22px;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                padding: 22px;
+                border-radius: 18px;
+            }
+
+            .add-form {
+                grid-template-columns: 1fr;
+            }
+
+            .add-button {
+                min-height: 48px;
+            }
+
+            .todo-row {
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Java TODO Demo</h1>
+    <main class="app-shell">
+        <section class="card">
+            <div class="header">
+                <div class="badge">
+                    Java 25 • Spring Boot
+                </div>
 
-    <form method="post" action="/todos" autocomplete="off">
-        <input type="text" name="title" placeholder="What needs doing?"
-             aria-label="New todo title" data-testid="new-todo-input" required />
-        <button type="submit" data-testid="add-todo">Add</button>
-    </form>
+                <h1>TODO Dashboard</h1>
+                <p class="subtitle">
+                    Stay focused and keep track of what needs to get done.
+                </p>
+            </div>
 
-    <ul>
-        <li th:each="todo : ${todos}" data-testid="todo-item">
-            <form method="post" th:action="@{/todos/{id}/toggle(id=${todo.id})}">
-                <input type="checkbox" th:checked="${todo.completed}"
-                       th:attr="aria-label='Toggle ' + ${todo.title}"
-                       onchange="this.form.submit()" />
-                <span th:text="${todo.title}">Todo title</span>
-                <button type="submit" th:formaction="@{/todos/{id}/delete(id=${todo.id})}"
-                        data-testid="delete-todo">Delete</button>
+            <form class="add-form"
+                  method="post"
+                  action="/todos"
+                  autocomplete="off">
+
+                <input
+                    class="todo-input"
+                    type="text"
+                    name="title"
+                    placeholder="What needs doing?"
+                    aria-label="New todo title"
+                    data-testid="new-todo-input"
+                    required
+                />
+
+                <button
+                    class="add-button"
+                    type="submit"
+                    data-testid="add-todo">
+                    Add Task
+                </button>
             </form>
-        </li>
-    </ul>
+
+            <ul class="todo-list">
+                <li class="todo-item"
+                    th:each="todo : ${todos}"
+                    data-testid="todo-item">
+
+                    <form class="todo-row"
+                          method="post"
+                          th:action="@{/todos/{id}/toggle(id=${todo.id})}">
+
+                        <input
+                            class="todo-checkbox"
+                            type="checkbox"
+                            th:checked="${todo.completed}"
+                            th:attr="aria-label='Toggle ' + ${todo.title}"
+                            onchange="this.form.submit()"
+                        />
+
+                        <span
+                            class="todo-title"
+                            th:text="${todo.title}">
+                            Todo title
+                        </span>
+
+                        <button
+                            class="delete-button"
+                            type="submit"
+                            th:formaction="@{/todos/{id}/delete(id=${todo.id})}"
+                            data-testid="delete-todo">
+                            Delete
+                        </button>
+                    </form>
+                </li>
+            </ul>
+
+            <div class="empty-state"
+                 th:if="${#lists.isEmpty(todos)}">
+                No tasks yet. Add your first task above.
+            </div>
+
+            <div class="footer">
+                Built with Java, Spring Boot and Thymeleaf
+            </div>
+        </section>
+    </main>
 </body>
 </html>
